@@ -1,0 +1,13 @@
+{
+  "name": "neovim-vff",
+  "version": "0.0.1",
+  "description": "Neovim VFF plugin",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dannydulai/neovim-vff.git"
+  },
+  "author": "Danny Dulai",
+  "license": "MIT"
+  }
+}
