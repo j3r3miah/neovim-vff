@@ -143,7 +143,7 @@ function _connect2(nvim) {
                         debug(err);
                         clearTimeout(timer);
                         nvim.command("call VFFstatus('Failed to run VFFServer.exe')", function(err) { });
-                        _connectcb("FAILEDTOCONNECT");
+                        _connectcb("FAILED_TO_START");
                     });
                     child.unref();
                 } else {
@@ -153,7 +153,7 @@ function _connect2(nvim) {
                         debug(err);
                         clearTimeout(timer);
                         nvim.command("call VFFstatus('Failed to run VFFServer.exe')", function(err) { });
-                        _connectcb("FAILEDTOCONNECT");
+                        _connectcb("FAILED_TO_START");
                     });
                     child.unref();
                 }
@@ -164,17 +164,28 @@ function _connect2(nvim) {
         _sock.removeListener("close", onfail);
 
         nvim.command("call VFFstatus('Scanning')", function(err) { });
-        var lines = "init " + _path + "\n";
-        lines += "config include *.cs\n";
-        lines += "go\n";
-        _sock.write(lines);
-        _donop(function(err) {
-            if (err)
-                _connectcb(err);
-            else {
-                nvim.command("call VFFstatus('OK')", function(err) { });
-                _connectcb(null);
+
+        fs.readFile(_vffpath, function (err, data) {
+            if (err) {
+                debug(err);
+                _connectcb("FAILED_TO_READ_DOT_VFF");
+                return;
             }
+
+            var vfflines = data.toString().split('\n');
+
+            var lines = "init " + _path + "\n";
+            for (x in vfflines) if (vfflines[x]) lines += "config " + vfflines[x] + "\n";
+            lines += "go\n";
+            _sock.write(lines);
+            _donop(function(err) {
+                if (err)
+                    _connectcb(err);
+                else {
+                    nvim.command("call VFFstatus('OK')", function(err) { });
+                    _connectcb(null);
+                }
+            });
         });
     });
 }
