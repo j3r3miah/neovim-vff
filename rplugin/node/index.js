@@ -302,8 +302,8 @@ function _refresh(nvim, mode) {
                         return;
                     }
                     if (data != "") {
-                        debug("LINE: " + data.replace(/\"/g, "\\\""));
-                        lines.push(data.replace(/\"/g, "\\\""));
+                        debug("LINE: " + data.replace(/\\/g, "\\\\").replace(/\"/g, "\\\""));
+                        lines.push(data.replace(/\\/g, "\\\\").replace(/\"/g, "\\\""));
                         read();
                     } else {
                         debug("LINES: " + lines.length);

@@ -302,15 +302,11 @@
 
 :function! VFFLines (lines)
 : silent! 7,$d
-: let l:i = 6
-: let l:lines = split(a:lines, '\n')
+: let l:lines = split(a:lines, "\n")
 : if len(l:lines) > 0
-:   for line in l:lines
-:       call append(l:i, line)
-:       let l:i = l:i + 1
-:   endfor
+:       call append(6, l:lines)
 : else
-:       call append(l:i, "")
+:       call append(6, "")
 : endif
 : call VFFfixline()
 :endfunction
