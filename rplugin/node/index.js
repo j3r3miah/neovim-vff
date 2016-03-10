@@ -190,36 +190,36 @@ function _connect2(nvim) {
     });
 }
 
-plugin.functionSync('VFFTextAppendSync', function( nvim, args ) {
+plugin.functionSync('VFFTextAppendSync', function( nvim, args, cb ) {
     var mode = args[0];
     var s = args[1];
     if (mode == 'find') {
         _findtext += s;
-        return _findtext;
+        cb(false, _findtext);
     } else {
         _greptext += s;
-        return _greptext;
+        cb(false, _greptext);
     }
 });
 
-plugin.functionSync('VFFTextBackspaceSync', function( nvim, args ) {
+plugin.functionSync('VFFTextBackspaceSync', function( nvim, args, cb ) {
     var mode = args[0];
     if (mode == 'find') {
         _findtext = _findtext.substring(0, _findtext.length-1);
-        return _findtext;
+        cb(false, _findtext);
     } else {
         _greptext = _greptext.substring(0, _greptext.length-1);
-        return _greptext;
+        cb(false, _greptext);
     }
 });
 
-plugin.functionSync('VFFTextClearSync', function( nvim, args ) {
+plugin.functionSync('VFFTextClearSync', function( nvim, args, cb ) {
     var mode = args[0];
     if (mode == 'find')
         _findtext = "";
     else
         _greptext = "";
-    return "";
+    cb(false, "");
 });
 
 
@@ -315,14 +315,14 @@ function _refresh(nvim, mode) {
             };
             read();
         } else {
-            debug("nO PROCEED");
+            debug("NO PROCEED");
             cleanup('');
             return;
         }
     });
 }
 
-plugin.functionSync('VFFRelativePathSync', function( nvim, args ) {
+plugin.functionSync('VFFRelativePathSync', function( nvim, args, cb ) {
     var relativeto = args[0];
     var abspath = args[1];
 
@@ -336,10 +336,10 @@ plugin.functionSync('VFFRelativePathSync', function( nvim, args ) {
     var ret = "";
     var i = 0;
     while (i < rel.length) { ret += "../"; i++; }
-    return ret + path.join("/");
+    cb(false, ret + path.join("/"));
 });
 
-plugin.functionSync('VFFEnterSync', function( nvim, args ) {
+plugin.functionSync('VFFEnterSync', function( nvim, args, cb) {
     var mode = args[0];
 
     var waitchars = [ '|', '/', '-', '\\', '|', '/', '-', '\\' ];
@@ -353,8 +353,13 @@ plugin.functionSync('VFFEnterSync', function( nvim, args ) {
         clearInterval(timer);
     });
 
+    var r;
     if (_foundvff)
-        return [ _path, mode == "grep" ? _greptext : _findtext ];
+        r = [ _path, mode == "grep" ? _greptext : _findtext ];
     else
-        return undefined;
+        r = undefined;
+
+    debug("returning from EnterSync with", r);
+
+    cb(false, r);
 });
