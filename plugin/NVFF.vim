@@ -221,7 +221,7 @@
 :    nnoremap <buffer> <        :call VffText('<')<CR>
 :    nnoremap <buffer> >        :call VffText('>')<CR>
 :    nnoremap <buffer> /        :call VffText('/')<CR>
-:    nnoremap <buffer> \        :call VffText('\\')<CR>
+:    nnoremap <buffer> \        :call VffText('\')<CR>
 :    nnoremap <buffer> !        :call VffText('!')<CR>
 :    nnoremap <buffer> @        :call VffText('@')<CR>
 :    nnoremap <buffer> #        :call VffText('#')<CR>
@@ -242,7 +242,8 @@
 :    nnoremap <buffer> =        :call VffText('=')<CR>
 :    nnoremap <buffer> "        :call VffText('"')<CR>
 :    nnoremap <buffer> ~        :call VffText('~')<CR>
-:    nnoremap <buffer> '        :call VffText('\''')<CR>
+:    nnoremap <buffer> '        :call VffText("'")<CR>
+:    nnoremap <buffer> \|       :call VffText("\|")<CR>
 :    nnoremap <buffer> <C-U>    :call VffClear()<CR>
 :    nnoremap <buffer> <BS>     :call VffBackspace()<CR>
 :    nnoremap <buffer> <M-J>    :call VffDown(1)<CR>

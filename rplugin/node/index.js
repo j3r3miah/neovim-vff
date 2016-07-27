@@ -232,7 +232,7 @@ plugin.function('VFFRefresh', function( nvim, args ) {
 });
 
 function _refresh(nvim, mode) {
-    debug("want to refresh");
+//    debug("want to refresh");
     if (!_foundvff) return;
 
     var seq = ++_refreshseq;
@@ -251,7 +251,7 @@ function _refresh(nvim, mode) {
     }, 100);
 
     var cleanup = function(lines) {
-        debug("claning: " + lines.length);
+//        debug("cleaning: " + lines.length);
         clearInterval(timer);
         _refreshinprogress = false;
         if (_refreshneeded) {
@@ -261,7 +261,7 @@ function _refresh(nvim, mode) {
 
         } else {
             if (seq == _refreshseq) {
-                debug("SENT " + lines.length);
+//                debug("SENT " + lines.length);
                 nvim.command("call VFFLines(\"" + lines + "\")", function(err) {
                     if (err) { debug(err); }
                 });
@@ -302,12 +302,12 @@ function _refresh(nvim, mode) {
                         return;
                     }
                     if (data != "") {
-                        debug("LINE: " + data.replace(/\\/g, "\\\\").replace(/\"/g, "\\\""));
+//                        debug("LINE: " + data.replace(/\\/g, "\\\\").replace(/\"/g, "\\\""));
                         lines.push(data.replace(/\\/g, "\\\\").replace(/\"/g, "\\\""));
                         read();
                     } else {
-                        debug("LINES: " + lines.length);
-                        debug("LINEDATAS: " + (lines.slice(0,100).join("\n")).length);
+//                        debug("LINES: " + lines.length);
+//                        debug("LINEDATAS: " + (lines.slice(0,100).join("\n")).length);
                         cleanup(lines.slice(0,100).join("\n"));
                         return;
                     }
