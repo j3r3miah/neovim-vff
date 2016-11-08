@@ -91,7 +91,7 @@
 :  hi CursorLine   cterm=NONE ctermbg=darkblue ctermfg=white
 :  setlocal cc=
 :  let &report = l:saveReport
-:  0,$d
+:  0,$d_
 :  let l:ret = VFFEnterSync(g:vff_mode)
 :  if !empty(l:ret)
 :    let g:vff_path = (l:ret)[0]
