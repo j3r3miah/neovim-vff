@@ -8,15 +8,15 @@ endif
 "
 
 if !exists("g:vffFindActKeySeq")
-    let vffFindActKeySeq = '<C-F>'
+  let vffFindActKeySeq = '<C-F>'
 endif
 
 if !exists("g:vffGrepActKeySeq")
-    let vffGrepActKeySeq = '<C-E>'
+  let vffGrepActKeySeq = '<C-E>'
 endif
 
 if !exists("g:vffSearchActKeySeq")
-    let vffSearchActKeySeq = '<C-S>'
+  let vffSearchActKeySeq = '<C-S>'
 endif
 
 " The name of the browser. The default is "/---Select File---", but you can
@@ -94,9 +94,9 @@ function! VffListBufs (mode)
   setlocal noswapfile
   let g:vff_vffwin = winnr()
   if g:vff_mode == 'find'
-     syn match Title "Find File:.*"
+    syn match Title "Find File:.*"
   else
-     syn match Title "Find Content:.*"
+    syn match Title "Find Content:.*"
   endif
   syn match Title "----------------*"
   hi CursorLine   cterm=NONE ctermbg=darkblue ctermfg=white
@@ -119,9 +119,9 @@ function! VffListBufs (mode)
     call append(3, 'Root: ' . g:vff_path . " [ " . g:vff_status . " ]")
     call append(4, '')
     if g:vff_mode == 'grep'
-        call append(5, 'Find Content: ' . (l:ret)[1])
+      call append(5, 'Find Content: ' . (l:ret)[1])
     else
-        call append(5, 'Find File: ' . (l:ret)[1])
+      call append(5, 'Find File: ' . (l:ret)[1])
     endif
     call append(6, '')
     call VFFLines(g:vff_lines)
@@ -304,9 +304,9 @@ function! VffText (ch)
   let g:vff_lasttext = VFFTextAppendSync(g:vff_mode, a:ch)
   let g:vff_lastline = line(".")
   if g:vff_mode == 'grep'
-      call setline(6, 'Find Content: ' . g:vff_lasttext)
+    call setline(6, 'Find Content: ' . g:vff_lasttext)
   else
-      call setline(6, 'Find File: ' . g:vff_lasttext)
+    call setline(6, 'Find File: ' . g:vff_lasttext)
   endif
   echo ""
   if exists("g:vff_refreshdelay")
@@ -317,15 +317,15 @@ function! VffText (ch)
 endfunction
 
 function! VFFLines (lines)
- silent! 7,$d
- let g:vff_lines = a:lines
- let l:lines = split(a:lines, "\n")
- if len(l:lines) > 0
-       call append(6, l:lines)
- else
-       call append(6, "")
- endif
- call VFFfixline()
+  silent! 7,$d
+  let g:vff_lines = a:lines
+  let l:lines = split(a:lines, "\n")
+  if len(l:lines) > 0
+    call append(6, l:lines)
+  else
+    call append(6, "")
+  endif
+  call VFFfixline()
 endfunction
 
 function! VFFstatus (status)
@@ -334,15 +334,15 @@ function! VFFstatus (status)
 endfunction
 
 function! VFFfixline ()
- if g:vff_lastline >= 7
-     exec g:vff_lastline
- else
-     exec 7
- endif
+  if g:vff_lastline >= 7
+    exec g:vff_lastline
+  else
+    exec 7
+  endif
 endfunction
 
 function! VFFwaiting (ch)
- call setline(4, 'Root: ' . g:vff_path . " [ " . g:vff_status . " ] " . a:ch)
+  call setline(4, 'Root: ' . g:vff_path . " [ " . g:vff_status . " ] " . a:ch)
 endfunction
 
 " updates the entry line immediately but don't refresh the results until the next CursorHold event
@@ -350,9 +350,9 @@ function! VffBackspace ()
   let g:vff_lasttext = VFFTextBackspaceSync(g:vff_mode)
   let g:vff_lastline = line(".")
   if g:vff_mode == 'grep'
-      call setline(6, 'Find Content: ' . g:vff_lasttext)
+    call setline(6, 'Find Content: ' . g:vff_lasttext)
   else
-      call setline(6, 'Find File: ' . g:vff_lasttext)
+    call setline(6, 'Find File: ' . g:vff_lasttext)
   endif
   echo ""
   if exists("g:vff_refreshdelay")
@@ -367,9 +367,9 @@ function! VffClear ()
   let g:vff_lasttext = VFFTextClearSync(g:vff_mode)
   let g:vff_lastline = line(".")
   if g:vff_mode == 'grep'
-      call setline(6, 'Find Content: ' . g:vff_lasttext)
+    call setline(6, 'Find Content: ' . g:vff_lasttext)
   else
-      call setline(6, 'Find File: ' . g:vff_lasttext)
+    call setline(6, 'Find File: ' . g:vff_lasttext)
   endif
   call VFFLines('')
   echo ""
@@ -416,7 +416,7 @@ function! VffSelectCurrentBuffer ()
       let l:offset = substitute(l:line, "^[^(]*(\\([0-9]\\+\\)):.*", "\\1", "")
       exec 'goto ' . l:offset
       if (foldclosed('.') != -1)
-         foldopen!
+        foldopen!
       endif
     endif
   endif
@@ -436,9 +436,9 @@ endfunction
 function! VffDeActivate (mode)
   call VffQuit()
   if a:mode != g:vff_mode
-     " Toggle between find/grep modes
-     call VffListBufs (a:mode)
-  " else
-  "    echo ""
+    " Toggle between find/grep modes
+    call VffListBufs (a:mode)
+    " else
+    "    echo ""
   endif
 endfunction
