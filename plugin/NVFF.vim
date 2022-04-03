@@ -12,6 +12,10 @@ if !exists("g:vffGrepActKeySeq")
     let vffGrepActKeySeq = '<C-E>'
 endif
 
+if !exists("g:vffSearchActKeySeq")
+    let vffSearchActKeySeq = '<C-S>'
+endif
+
 " The name of the browser. The default is "/---Select File---", but you can
 "   change the name at your will. A leading '/' is advised if you change
 "   directories from with in vim.
@@ -53,6 +57,8 @@ function! VffSetupActivationKey ()
   exec 'vnoremap ' . g:vffFindActKeySeq . ' :call VffListBufs ("find")<CR>'
   exec 'nnoremap ' . g:vffGrepActKeySeq . ' :call VffListBufs ("grep")<CR>'
   exec 'vnoremap ' . g:vffGrepActKeySeq . ' :call VffListBufs ("grep")<CR>'
+  exec 'nnoremap ' . g:vffSearchActKeySeq . ' :call VffSearch ("normal")<CR>'
+  exec 'vnoremap ' . g:vffSearchActKeySeq . ' :call VffSearch ("visual")<CR>'
 endfunction
 
 function! VffSetupDeActivationKey ()
@@ -60,6 +66,8 @@ function! VffSetupDeActivationKey ()
   exec 'vnoremap ' . g:vffFindActKeySeq . ' :call VffQuit ()<CR>:echo<CR>'
   exec 'nnoremap ' . g:vffGrepActKeySeq . ' :call VffQuit ()<CR>:echo<CR>'
   exec 'vnoremap ' . g:vffGrepActKeySeq . ' :call VffQuit ()<CR>:echo<CR>'
+  exec 'nnoremap ' . g:vffSearchActKeySeq . ' :call VffDeActivate ("grep")<CR>'
+  exec 'vnoremap ' . g:vffSearchActKeySeq . ' :call VffDeActivate ("grep")<CR>'
 endfunction
 
 call VffSetupActivationKey ()

@@ -1,3 +1,11 @@
+module.exports = plugin => {
+
+const nvim = plugin.nvim;
+
+function debug(o) {
+    // nvim.command("echom '" + o + "'");
+}
+
 var net           = require('net'),
     fs            = require('fs'),
     path          = require('path'),
@@ -69,7 +77,7 @@ function _connect(nvim, cb) {
     if (_conninprogress) return;
     _conninprogress = true;
 
-//    debug("_connect ", new Error().stack);
+    // debug("_connect ", new Error().stack);
     if (!_foundvff) { _connectcb("NOVFF"); return; }
 
     if (_sock) {
@@ -164,75 +172,61 @@ function _connect2(nvim) {
         _sock.removeListener("close", onfail);
 
         nvim.command("call VFFstatus('Scanning')", function(err) { });
-
-        fs.readFile(_vffpath, function (err, data) {
-            if (err) {
-                debug(err);
-                _connectcb("FAILED_TO_READ_DOT_VFF");
-                return;
+        _sock.write('config ' + _vffpath + '\n');
+        _donop(function(err) {
+            if (err)
+                _connectcb(err);
+            else {
+                nvim.command("call VFFstatus('OK')", function(err) { });
+                _connectcb(null);
             }
-
-            var vfflines = data.toString().split('\n');
-
-            var lines = "init " + _path + "\n";
-            for (x in vfflines) if (vfflines[x]) lines += "config " + vfflines[x] + "\n";
-            lines += "go\n";
-            _sock.write(lines);
-            _donop(function(err) {
-                if (err)
-                    _connectcb(err);
-                else {
-                    nvim.command("call VFFstatus('OK')", function(err) { });
-                    _connectcb(null);
-                }
-            });
         });
     });
 }
 
-plugin.functionSync('VFFTextAppendSync', function( nvim, args, cb ) {
+plugin.registerFunction('VFFTextAppendSync', function( args, cb ) {
     var mode = args[0];
     var s = args[1];
     if (mode == 'find') {
         _findtext += s;
-        cb(false, _findtext);
+        return _findtext;
     } else {
         _greptext += s;
-        cb(false, _greptext);
+        return _greptext;
     }
-});
+}, { sync: true });
 
-plugin.functionSync('VFFTextBackspaceSync', function( nvim, args, cb ) {
+plugin.registerFunction('VFFTextBackspaceSync', function( args, cb ) {
     var mode = args[0];
     if (mode == 'find') {
         _findtext = _findtext.substring(0, _findtext.length-1);
-        cb(false, _findtext);
+        return _findtext;
     } else {
         _greptext = _greptext.substring(0, _greptext.length-1);
-        cb(false, _greptext);
+        return _greptext;
     }
-});
+}, { sync: true });
 
-plugin.functionSync('VFFTextClearSync', function( nvim, args, cb ) {
+plugin.registerFunction('VFFTextClearSync', function( args, cb ) {
     var mode = args[0];
     if (mode == 'find')
         _findtext = "";
     else
         _greptext = "";
-    cb(false, "");
-});
+    return "";
+}, { sync: true });
 
 
 var _refreshseq = 0;
 var _refreshinprogress;
 var _refreshneeded;
 
-plugin.function('VFFRefresh', function( nvim, args ) {
-    _refresh(nvim, args[0]);
-});
+plugin.registerFunction('VFFRefresh', function( args ) {
+    _refresh(args[0]);
+}, { sync: true });
 
-function _refresh(nvim, mode) {
-//    debug("want to refresh");
+function _refresh(mode) {
+    // debug("want to refresh");
     if (!_foundvff) return;
 
     var seq = ++_refreshseq;
@@ -251,7 +245,7 @@ function _refresh(nvim, mode) {
     }, 100);
 
     var cleanup = function(lines) {
-//        debug("cleaning: " + lines.length);
+        // debug("cleaning: " + lines.length);
         clearInterval(timer);
         _refreshinprogress = false;
         if (_refreshneeded) {
@@ -261,7 +255,7 @@ function _refresh(nvim, mode) {
 
         } else {
             if (seq == _refreshseq) {
-//                debug("SENT " + lines.length);
+                // debug("SENT " + lines.length);
                 nvim.command("call VFFLines(\"" + lines + "\")", function(err) {
                     if (err) { debug(err); }
                 });
@@ -302,12 +296,12 @@ function _refresh(nvim, mode) {
                         return;
                     }
                     if (data != "") {
-//                        debug("LINE: " + data.replace(/\\/g, "\\\\").replace(/\"/g, "\\\""));
+                        // debug("LINE: " + data.replace(/\\/g, "\\\\").replace(/\"/g, "\\\""));
                         lines.push(data.replace(/\\/g, "\\\\").replace(/\"/g, "\\\""));
                         read();
                     } else {
-//                        debug("LINES: " + lines.length);
-//                        debug("LINEDATAS: " + (lines.slice(0,100).join("\n")).length);
+                        // debug("LINES: " + lines.length);
+                        // debug("LINEDATAS: " + (lines.slice(0,100).join("\n")).length);
                         cleanup(lines.slice(0,100).join("\n"));
                         return;
                     }
@@ -322,7 +316,7 @@ function _refresh(nvim, mode) {
     });
 }
 
-plugin.functionSync('VFFRelativePathSync', function( nvim, args, cb ) {
+plugin.registerFunction('VFFRelativePathSync', function( args, cb ) {
     var relativeto = args[0];
     var abspath = args[1];
 
@@ -336,10 +330,10 @@ plugin.functionSync('VFFRelativePathSync', function( nvim, args, cb ) {
     var ret = "";
     var i = 0;
     while (i < rel.length) { ret += "../"; i++; }
-    cb(false, ret + path.join("/"));
-});
+    return ret + path.join("/");
+}, { sync: true });
 
-plugin.functionSync('VFFEnterSync', function( nvim, args, cb) {
+plugin.registerFunction('VFFEnterSync', function( args ) {
     var mode = args[0];
 
     var waitchars = [ '|', '/', '-', '\\', '|', '/', '-', '\\' ];
@@ -360,6 +354,7 @@ plugin.functionSync('VFFEnterSync', function( nvim, args, cb) {
         r = undefined;
 
     debug("returning from EnterSync with", r);
+    return r;
+}, { sync: true });
 
-    cb(false, r);
-});
+};
