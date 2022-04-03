@@ -113,9 +113,9 @@ function! VffListBufs (mode)
     aug END
     setlocal cursorline
     call VffSetupSelect ()
-    call append(0, 'VimFastFind: Ctrl-F for file mode, Ctrl-E for grep mode')
-    call append(1, '<ESC> to quit, <UP>/<DOWN> or Alt-J/Alt-K to move, <ENTER> to select')
-    call append(2, '----------------------------------------------------------------------')
+    call append(0, 'VimFastFind: Ctrl-F for file mode, Ctrl-G for grep mode')
+    call append(1, '<C-F>/<C-G> again to quit, <UP>/<DOWN> or Alt-J/Alt-K to move, <ENTER> to select')
+    call append(2, '--------------------------------------------------------------------------------')
     call append(3, 'Root: ' . g:vff_path . " [ " . g:vff_status . " ]")
     call append(4, '')
     if g:vff_mode == 'grep'
@@ -148,7 +148,7 @@ function! VffSetupBadSelect ()
   if ! exists ("g:VffSetup")
     nnoremap <buffer> <CR>     :call VffQuit()<CR>
     nnoremap <buffer> <C-C>    :call VffQuit()<CR>
-    nnoremap <buffer> <ESC>    :call VffQuit()<CR>
+    " nnoremap <buffer> <ESC>    :call VffQuit()<CR>
     nnoremap <buffer> q        :call VffQuit()<CR>
     call VffSetupDeActivationKey ()
     let g:VffSetup = 1
@@ -160,7 +160,7 @@ function! VffSetupSelect ()
     set nofoldenable
     nnoremap <buffer> <CR>     :call VffSelectCurrentBuffer()<CR>
     nnoremap <buffer> <C-C>    :call VffQuit()<CR>
-    nnoremap <buffer> <ESC>    :call VffQuit()<CR>
+    " nnoremap <buffer> <ESC>    :call VffQuit()<CR>
     nnoremap <buffer> <SPACE>  :call VffText(' ')<CR>
     nnoremap <buffer> a        :call VffText('a')<CR>
     nnoremap <buffer> b        :call VffText('b')<CR>
