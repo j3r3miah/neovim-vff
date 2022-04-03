@@ -204,6 +204,7 @@ plugin.registerFunction('VFFTextBackspaceSync', function( args, cb ) {
         _greptext = _greptext.substring(0, _greptext.length-1);
         return _greptext;
     }
+    return "";
 }, { sync: true });
 
 plugin.registerFunction('VFFTextClearSync', function( args, cb ) {

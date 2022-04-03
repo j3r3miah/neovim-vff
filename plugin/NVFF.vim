@@ -351,7 +351,7 @@ endfunction
 
 function! VffStatus (status)
   let g:vff_status = a:status
-  call setline(4, 'Root: ' . g:vff_path . " [ " . g:vff_status . " ]                                   ")
+  call setline(4, 'Root: ' . g:vff_path . " [ " . g:vff_status . " ]")
 endfunction
 
 function! VffFixLine ()
@@ -369,6 +369,9 @@ endfunction
 " updates the entry line immediately but don't refresh the results until the next CursorHold event
 function! VffBackspace ()
   let g:vff_lasttext = VFFTextBackspaceSync(g:vff_mode)
+  if g:vff_lasttext == v:null
+    let g:vff_lasttext = ''
+  endif
   let g:vff_lastline = line(".")
   if g:vff_mode == 'grep'
     call setline(6, 'Find Content: ' . g:vff_lasttext)
@@ -386,6 +389,9 @@ endfunction
 " updates the entry and results immediately
 function! VffClear ()
   let g:vff_lasttext = VFFTextClearSync(g:vff_mode)
+  if g:vff_lasttext == v:null
+    let g:vff_lasttext = ''
+  endif
   let g:vff_lastline = line(".")
   if g:vff_mode == 'grep'
     call setline(6, 'Find Content: ' . g:vff_lasttext)
@@ -449,7 +455,7 @@ endfunction
 function! VffQuit ()
   let l:myBufNr = bufnr ("%")
   set nomodified
-  exec "bd " . l:myBufNr
+  silent! exec "bd " . l:myBufNr
   call VffUnsetupSelect()
   let &timeoutlen = g:vff_savetimeoutlen
 endfunction
@@ -459,8 +465,6 @@ function! VffDeActivate (mode)
   if a:mode != g:vff_mode
     " Toggle between find/grep modes
     call VffListBufs (a:mode)
-    " else
-    "    echo ""
   endif
 endfunction
 
