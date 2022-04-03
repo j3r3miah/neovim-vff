@@ -80,10 +80,10 @@ endfunction
 
 call VffSetupActivationKey ()
 
-let g:vff_lastline = -1
-let g:vff_lasttext = ""
-let g:vff_path     = ""
-let g:vff_status   = ""
+let g:vff_query = ""
+let g:vff_line = #{ find: -1, grep: -1 }
+let g:vff_path = ""
+let g:vff_status = ""
 
 function! VffListBufs (mode)
   let g:vff_mode = a:mode
@@ -136,7 +136,7 @@ function! VffListBufs (mode)
     call append(2, "Hit ESCAPE or ENTER to close this window")
   endif
   set nomodified
-  call VffFixLine()
+  call VffRestoreLineNumber()
 endfunction
 
 function! VffSearch (vimMode)
@@ -320,12 +320,12 @@ endfunction
 
 " updates the entry line immediately but don't refresh the results until the next CursorHold event
 function! VffText (ch)
-  let g:vff_lasttext = VFFTextAppendSync(g:vff_mode, a:ch)
-  let g:vff_lastline = line(".")
+  let g:vff_query = VFFTextAppendSync(g:vff_mode, a:ch)
+  call VffSaveLineNumber()
   if g:vff_mode == 'grep'
-    call setline(6, 'Find Content: ' . g:vff_lasttext)
+    call setline(6, 'Find Content: ' . g:vff_query)
   else
-    call setline(6, 'Find File: ' . g:vff_lasttext)
+    call setline(6, 'Find File: ' . g:vff_query)
   endif
   echo ""
   if exists("g:vff_refreshdelay")
@@ -343,7 +343,7 @@ function! VffLines (lines)
   else
     call append(6, "")
   endif
-  call VffFixLine()
+  call VffRestoreLineNumber()
 endfunction
 
 function! VffStatus (status)
@@ -351,9 +351,13 @@ function! VffStatus (status)
   call setline(4, 'Root: ' . g:vff_path . " [ " . g:vff_status . " ]")
 endfunction
 
-function! VffFixLine ()
-  if g:vff_lastline >= 7
-    exec g:vff_lastline
+function! VffSaveLineNumber ()
+  let g:vff_line[g:vff_mode] = line(".")
+endfunction
+
+function! VffRestoreLineNumber ()
+  if g:vff_line[g:vff_mode] >= 7
+    exec g:vff_line[g:vff_mode]
   else
     exec 7
   endif
@@ -365,15 +369,15 @@ endfunction
 
 " updates the entry line immediately but don't refresh the results until the next CursorHold event
 function! VffBackspace ()
-  let g:vff_lasttext = VFFTextBackspaceSync(g:vff_mode)
-  if g:vff_lasttext == v:null
-    let g:vff_lasttext = ''
+  let g:vff_query = VFFTextBackspaceSync(g:vff_mode)
+  if g:vff_query == v:null
+    let g:vff_query = ''
   endif
-  let g:vff_lastline = line(".")
+  call VffSaveLineNumber()
   if g:vff_mode == 'grep'
-    call setline(6, 'Find Content: ' . g:vff_lasttext)
+    call setline(6, 'Find Content: ' . g:vff_query)
   else
-    call setline(6, 'Find File: ' . g:vff_lasttext)
+    call setline(6, 'Find File: ' . g:vff_query)
   endif
   echo ""
   if exists("g:vff_refreshdelay")
@@ -385,15 +389,15 @@ endfunction
 
 " updates the entry and results immediately
 function! VffClear ()
-  let g:vff_lasttext = VFFTextClearSync(g:vff_mode)
-  if g:vff_lasttext == v:null
-    let g:vff_lasttext = ''
+  let g:vff_query = VFFTextClearSync(g:vff_mode)
+  if g:vff_query == v:null
+    let g:vff_query = ''
   endif
-  let g:vff_lastline = line(".")
+  call VffSaveLineNumber()
   if g:vff_mode == 'grep'
-    call setline(6, 'Find Content: ' . g:vff_lasttext)
+    call setline(6, 'Find Content: ' . g:vff_query)
   else
-    call setline(6, 'Find File: ' . g:vff_lasttext)
+    call setline(6, 'Find File: ' . g:vff_query)
   endif
   call VffLines('')
   echo ""
@@ -406,13 +410,13 @@ function! VffUp(v)
   else
     7
   endif
-  let g:vff_lastline = line(".")
+  call VffSaveLineNumber()
   echo ""
 endfunction
 
 function! VffDown(v)
   silent! exec "normal! " . a:v . "j"
-  let g:vff_lastline = line(".")
+  call VffSaveLineNumber()
   echo ""
 endfunction
 
