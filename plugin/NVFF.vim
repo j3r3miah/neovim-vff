@@ -81,6 +81,7 @@ endfunction
 call VffSetupActivationKey ()
 
 let g:vff_query = ""
+let g:vff_results = #{ find: "", grep: "" }
 let g:vff_line = #{ find: -1, grep: -1 }
 let g:vff_path = ""
 let g:vff_status = ""
@@ -128,7 +129,7 @@ function! VffListBufs (mode)
       call append(5, 'Find File: ' . (l:ret)[1])
     endif
     call append(6, '')
-    call VFFRefresh(g:vff_mode)
+    call VffLines(g:vff_results[g:vff_mode])
   else
     call VffSetupBadSelect ()
     call append(0, "ERROR: No .vff file found!")
@@ -137,17 +138,6 @@ function! VffListBufs (mode)
   endif
   set nomodified
   call VffRestoreLineNumber()
-endfunction
-
-function! VffSearch (vimMode)
-  if a:vimMode == 'visual'
-    let s:query = VffGetSelection ()
-  else
-    let s:query = expand ('<cword>')
-  endif
-  call VFFTextClearSync("grep")
-  call VFFTextAppendSync("grep", s:query)
-  call VffListBufs ("grep")
 endfunction
 
 function! VffGetSelection()
@@ -303,6 +293,7 @@ function! VffSetupSelect ()
   endif
 endfunction
 
+" TODO can we get rid of refresh delay now?
 if exists("g:vff_refreshdelay")
   exec "set updatetime=" . g:vff_refreshdelay
   " this autocommand fires when a char hasn't been typed in 'updatetime' ms, in normal mode
@@ -335,8 +326,25 @@ function! VffText (ch)
   endif
 endfunction
 
+function! VffSearch (vimMode)
+  if a:vimMode == 'visual'
+    let s:query = VffGetSelection ()
+  else
+    let s:query = expand ('<cword>')
+  endif
+  let g:vff_mode = "grep"
+  if s:query != g:vff_query
+    call VFFTextClearSync(g:vff_mode)
+    let g:vff_query = VFFTextAppendSync(g:vff_mode, s:query)
+    let g:vff_line[g:vff_mode] = -1
+    call VFFRefresh(g:vff_mode)
+  endif
+  call VffListBufs (g:vff_mode)
+endfunction
+
 function! VffLines (lines)
   silent! 7,$d
+  let g:vff_results[g:vff_mode] = a:lines
   let l:lines = split(a:lines, "\n")
   if len(l:lines) > 0
     call append(6, l:lines)
