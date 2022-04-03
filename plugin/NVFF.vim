@@ -129,7 +129,7 @@ function! VffListBufs (mode)
       call append(5, 'Find File: ' . (l:ret)[1])
     endif
     call append(6, '')
-    call VFFLines(g:vff_lines)
+    call VffLines(g:vff_lines)
   else
     call VffSetupBadSelect ()
     call append(0, "ERROR: No .vff file found!")
@@ -137,7 +137,7 @@ function! VffListBufs (mode)
     call append(2, "Hit ESCAPE or ENTER to close this window")
   endif
   set nomodified
-  call VFFfixline()
+  call VffFixLine()
 endfunction
 
 function! VffSearch (vimMode)
@@ -337,7 +337,7 @@ function! VffText (ch)
   endif
 endfunction
 
-function! VFFLines (lines)
+function! VffLines (lines)
   silent! 7,$d
   let g:vff_lines = a:lines
   let l:lines = split(a:lines, "\n")
@@ -346,15 +346,15 @@ function! VFFLines (lines)
   else
     call append(6, "")
   endif
-  call VFFfixline()
+  call VffFixLine()
 endfunction
 
-function! VFFstatus (status)
+function! VffStatus (status)
   let g:vff_status = a:status
   call setline(4, 'Root: ' . g:vff_path . " [ " . g:vff_status . " ]                                   ")
 endfunction
 
-function! VFFfixline ()
+function! VffFixLine ()
   if g:vff_lastline >= 7
     exec g:vff_lastline
   else
@@ -362,7 +362,7 @@ function! VFFfixline ()
   endif
 endfunction
 
-function! VFFwaiting (ch)
+function! VffWaiting (ch)
   call setline(4, 'Root: ' . g:vff_path . " [ " . g:vff_status . " ] " . a:ch)
 endfunction
 
@@ -392,7 +392,7 @@ function! VffClear ()
   else
     call setline(6, 'Find File: ' . g:vff_lasttext)
   endif
-  call VFFLines('')
+  call VffLines('')
   echo ""
 endfunction
 

@@ -137,12 +137,12 @@ function _connect2(nvim) {
     _sock.once("close", onfail);
 
     emitLines(_sock);
-    nvim.command("call VFFstatus('Connecting...')", function(err) { });
+    nvim.command("call VffStatus('Connecting...')", function(err) { });
     debug("connecting");
     _sock.connect(20398, '127.0.0.1', function(err) {
         if (err) {
             debug("FAILEDTOCONNECT: ", err);
-            nvim.command("call VFFstatus('Starting VFFServer.exe')", function(err) { });
+            nvim.command("call VffStatus('Starting VFFServer.exe')", function(err) { });
             setTimeout(function() {
                 if (process.platform == "win32") {
                     var child = child_process.spawn(process.env.HOME + '/.vim/plugin/VFF/VFFServer.exe', [], { detached: true, stdio: [ 'ignore', 'ignore', 'ignore' ] });
@@ -150,7 +150,7 @@ function _connect2(nvim) {
                     child.once('error', function(err) {
                         debug(err);
                         clearTimeout(timer);
-                        nvim.command("call VFFstatus('Failed to run VFFServer.exe')", function(err) { });
+                        nvim.command("call VffStatus('Failed to run VFFServer.exe')", function(err) { });
                         _connectcb("FAILED_TO_START");
                     });
                     child.unref();
@@ -160,7 +160,7 @@ function _connect2(nvim) {
                     child.once('error', function(err) {
                         debug(err);
                         clearTimeout(timer);
-                        nvim.command("call VFFstatus('Failed to run VFFServer.exe')", function(err) { });
+                        nvim.command("call VffStatus('Failed to run VFFServer.exe')", function(err) { });
                         _connectcb("FAILED_TO_START");
                     });
                     child.unref();
@@ -171,13 +171,13 @@ function _connect2(nvim) {
         debug("connected");
         _sock.removeListener("close", onfail);
 
-        nvim.command("call VFFstatus('Scanning')", function(err) { });
+        nvim.command("call VffStatus('Scanning')", function(err) { });
         _sock.write('config ' + _vffpath + '\n');
         _donop(function(err) {
             if (err)
                 _connectcb(err);
             else {
-                nvim.command("call VFFstatus('OK')", function(err) { });
+                nvim.command("call VffStatus('OK')", function(err) { });
                 _connectcb(null);
             }
         });
@@ -246,7 +246,7 @@ function _refresh(mode) {
     var waitchars = [ '|', '/', '-', '\\', '|', '/', '-', '\\' ];
     var waitpos = 0;
     var timer = setInterval(function() {
-        nvim.command("call VFFwaiting('" + waitchars[waitpos] + "')", function(err) { });
+        nvim.command("call VffWaiting('" + waitchars[waitpos] + "')", function(err) { });
         waitpos = (waitpos + 1) % waitchars.length;
     }, 100);
 
@@ -262,7 +262,7 @@ function _refresh(mode) {
         } else {
             if (seq == _refreshseq) {
                 // debug("SENT " + lines.length);
-                nvim.command("call VFFLines(\"" + lines + "\")", function(err) {
+                nvim.command("call VffLines(\"" + lines + "\")", function(err) {
                     if (err) { debug(err); }
                 });
             }
@@ -345,7 +345,7 @@ plugin.registerFunction('VFFEnterSync', function( args ) {
     var waitchars = [ '|', '/', '-', '\\', '|', '/', '-', '\\' ];
     var waitpos = 0;
     var timer = setInterval(function() {
-        nvim.command("call VFFwaiting('" + waitchars[waitpos] + "')", function(err) { });
+        nvim.command("call VffWaiting('" + waitchars[waitpos] + "')", function(err) { });
         waitpos = (waitpos + 1) % waitchars.length;
     }, 100);
 
