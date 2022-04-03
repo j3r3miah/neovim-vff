@@ -233,7 +233,7 @@ plugin.registerFunction('VFFUpdateVffPath', function( args ) {
 }, { sync: true });
 
 function _refresh(mode) {
-    // debug("want to refresh");
+    debug("want to refresh");
     if (!_foundvff) return;
 
     var seq = ++_refreshseq;
@@ -281,7 +281,7 @@ function _refresh(mode) {
         debug("got connected");
 
         var proceed;
-        try { 
+        try {
             proceed = ((mode == "find" && text != "") || (mode == "grep" && text.length >= 3));
         } catch (e) {
             debug("ERR");

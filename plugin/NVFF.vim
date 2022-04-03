@@ -84,7 +84,6 @@ let g:vff_lastline = -1
 let g:vff_lasttext = ""
 let g:vff_path     = ""
 let g:vff_status   = ""
-let g:vff_lines    = ""
 
 function! VffListBufs (mode)
   let g:vff_mode = a:mode
@@ -129,7 +128,7 @@ function! VffListBufs (mode)
       call append(5, 'Find File: ' . (l:ret)[1])
     endif
     call append(6, '')
-    call VffLines(g:vff_lines)
+    call VFFRefresh(g:vff_mode)
   else
     call VffSetupBadSelect ()
     call append(0, "ERROR: No .vff file found!")
@@ -148,7 +147,6 @@ function! VffSearch (vimMode)
   endif
   call VFFTextClearSync("grep")
   call VFFTextAppendSync("grep", s:query)
-  call VFFRefresh("grep")
   call VffListBufs ("grep")
 endfunction
 
@@ -339,7 +337,6 @@ endfunction
 
 function! VffLines (lines)
   silent! 7,$d
-  let g:vff_lines = a:lines
   let l:lines = split(a:lines, "\n")
   if len(l:lines) > 0
     call append(6, l:lines)
@@ -432,10 +429,6 @@ function! VffSelectCurrentBuffer ()
   let l:line = getline(".")
   let l:lineNr = line(".")
   quit
-  if g:vff_mode == 'find'
-    let g:vff_lines    = ""
-    call VFFTextClearSync(g:vff_mode)
-  endif
   if l:line != "" && l:lineNr >= 7
     let l:path = VFFRelativePathSync(getcwd(), '/' . substitute(l:line, "([0-9]\\+):.*", "", ""))
     silent exec "edit " . fnameescape(l:path)
