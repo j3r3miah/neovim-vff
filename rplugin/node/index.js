@@ -185,8 +185,7 @@ function _connect2(nvim) {
 }
 
 plugin.registerFunction('VFFTextAppendSync', function( args, cb ) {
-    var mode = args[0];
-    var s = args[1];
+    var [mode, s] = args;
     if (mode == 'find') {
         _findtext += s;
         return _findtext;

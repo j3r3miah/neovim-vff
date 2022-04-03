@@ -12,7 +12,7 @@ if !exists("g:vffFindActKeySeq")
 endif
 
 if !exists("g:vffGrepActKeySeq")
-  let vffGrepActKeySeq = '<C-E>'
+  let vffGrepActKeySeq = '<C-G>'
 endif
 
 if !exists("g:vffSearchActKeySeq")
@@ -133,6 +133,22 @@ function! VffListBufs (mode)
   endif
   set nomodified
   call VFFfixline()
+endfunction
+
+function! VffSearch (vimMode)
+  if a:vimMode == 'visual'
+    let s:query = VffGetSelection ()
+  else
+    let s:query = expand ('<cword>')
+  endif
+  call VFFTextClearSync("grep")
+  call VFFTextAppendSync("grep", s:query)
+  call VFFRefresh("grep")
+  call VffListBufs ("grep")
+endfunction
+
+function! VffGetSelection()
+  return getline('.')[col("'<")-1:col("'>")-1]
 endfunction
 
 function! VffClearSetup ()
