@@ -224,6 +224,13 @@ plugin.registerFunction('VFFRefresh', function( args ) {
     _refresh(args[0]);
 }, { sync: true });
 
+plugin.registerFunction('VFFUpdateVffPath', function( args ) {
+    _vffpath = args[0];
+    _connect(nvim, function (err) {
+        _sock.write('config ' + _vffpath + '\n');
+    });
+}, { sync: true });
+
 function _refresh(mode) {
     // debug("want to refresh");
     if (!_foundvff) return;

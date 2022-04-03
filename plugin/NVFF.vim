@@ -19,6 +19,10 @@ if !exists("g:vffSearchActKeySeq")
   let vffSearchActKeySeq = '<C-S>'
 endif
 
+if !exists("g:vffChooseConfigKeySeq")
+  let vffChooseConfigKeySeq = '<C-Q>'
+endif
+
 " The name of the browser. The default is "/---Select File---", but you can
 "   change the name at your will. A leading '/' is advised if you change
 "   directories from with in vim.
@@ -62,6 +66,7 @@ function! VffSetupActivationKey ()
   exec 'vnoremap ' . g:vffGrepActKeySeq . ' :call VffListBufs ("grep")<CR>'
   exec 'nnoremap ' . g:vffSearchActKeySeq . ' :call VffSearch ("normal")<CR>'
   exec 'vnoremap ' . g:vffSearchActKeySeq . ' :call VffSearch ("visual")<CR>'
+  exec 'nnoremap ' . g:vffChooseConfigKeySeq . ' :call VffChooseConfig()<CR>'
 endfunction
 
 function! VffSetupDeActivationKey ()
@@ -457,4 +462,12 @@ function! VffDeActivate (mode)
     " else
     "    echo ""
   endif
+endfunction
+
+function! VffChooseConfig ()
+  call fzf#run({'source': 'ls .vff*', 'options': '--multi', 'sink': function("VffChangeConfig")})
+endfunction
+
+function! VffChangeConfig (configPath)
+  call VFFUpdateVffPath(getcwd() . "/" . a:configPath)
 endfunction
