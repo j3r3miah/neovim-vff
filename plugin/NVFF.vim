@@ -1,4 +1,7 @@
-if has('nvim')
+if !has('nvim')
+  finish
+endif
+
 " The key sequence that should activate the buffer browser. The default is ^F.
 "   Enter the key sequence in a single quoted string, exactly as you would use
 "   it in a map command.
@@ -62,10 +65,10 @@ function! VffSetupActivationKey ()
 endfunction
 
 function! VffSetupDeActivationKey ()
-  exec 'nnoremap ' . g:vffFindActKeySeq . ' :call VffQuit ()<CR>:echo<CR>'
-  exec 'vnoremap ' . g:vffFindActKeySeq . ' :call VffQuit ()<CR>:echo<CR>'
-  exec 'nnoremap ' . g:vffGrepActKeySeq . ' :call VffQuit ()<CR>:echo<CR>'
-  exec 'vnoremap ' . g:vffGrepActKeySeq . ' :call VffQuit ()<CR>:echo<CR>'
+  exec 'nnoremap ' . g:vffFindActKeySeq . ' :call VffDeActivate ("find")<CR>'
+  exec 'vnoremap ' . g:vffFindActKeySeq . ' :call VffDeActivate ("find")<CR>'
+  exec 'nnoremap ' . g:vffGrepActKeySeq . ' :call VffDeActivate ("grep")<CR>'
+  exec 'vnoremap ' . g:vffGrepActKeySeq . ' :call VffDeActivate ("grep")<CR>'
   exec 'nnoremap ' . g:vffSearchActKeySeq . ' :call VffDeActivate ("grep")<CR>'
   exec 'vnoremap ' . g:vffSearchActKeySeq . ' :call VffDeActivate ("grep")<CR>'
 endfunction
@@ -426,5 +429,3 @@ function! VffQuit ()
   call VffUnsetupSelect()
   let &timeoutlen = g:vff_savetimeoutlen
 endfunction
-
-endif
