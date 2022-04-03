@@ -41,20 +41,6 @@ let vffRemoveBrowserBuffer = 1
 "   the filename instead of the whole path. The default value is 0.
 let highlightOnlyFilename = 0
 
-" Your can configure a delay in between when typing stops and results list.
-"   To enable the delay, add to your .vimrc:
-"      let g:vff_debounce = 1
-"   The default is 100 ms. To change it to 50 ms, add to your .vimrc:
-"      let g:vff_debounce_delay = 50
-"
-if exists("g:vff_debounce")
-  if exists("g:vff_debounce_delay")
-    let g:vff_refreshdelay = g:vff_debounce_delay
-  else
-    let g:vff_refreshdelay = 100
-  endif
-endif
-
 "
 " END configuration.
 "
@@ -293,22 +279,6 @@ function! VffSetupSelect ()
   endif
 endfunction
 
-" TODO can we get rid of refresh delay now?
-if exists("g:vff_refreshdelay")
-  exec "set updatetime=" . g:vff_refreshdelay
-  " this autocommand fires when a char hasn't been typed in 'updatetime' ms, in normal mode
-  autocmd CursorHold * :call VffRefresh()
-endif
-
-function! VffRefresh ()
-  if exists("g:vff_needrefresh")
-    if exists("g:vff_refreshdelay")
-      call VFFRefresh(g:vff_mode)
-    endif
-    unlet g:vff_needrefresh
-  endif
-endfunction
-
 " updates the entry line immediately but don't refresh the results until the next CursorHold event
 function! VffText (ch)
   let g:vff_query = VFFTextAppendSync(g:vff_mode, a:ch)
@@ -319,11 +289,7 @@ function! VffText (ch)
     call setline(6, 'Find File: ' . g:vff_query)
   endif
   echo ""
-  if exists("g:vff_refreshdelay")
-    let g:vff_needrefresh = 1
-  else
-    call VFFRefresh(g:vff_mode)
-  endif
+  call VFFRefresh(g:vff_mode)
 endfunction
 
 function! VffSearch (vimMode)
@@ -388,11 +354,7 @@ function! VffBackspace ()
     call setline(6, 'Find File: ' . g:vff_query)
   endif
   echo ""
-  if exists("g:vff_refreshdelay")
-    let g:vff_needrefresh = 1
-  else
-    call VFFRefresh(g:vff_mode)
-  endif
+  call VFFRefresh(g:vff_mode)
 endfunction
 
 " updates the entry and results immediately
