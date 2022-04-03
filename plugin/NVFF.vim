@@ -255,8 +255,8 @@ function! VffSetupSelect ()
     nnoremap <buffer> ~        :call VffText('~')<CR>
     nnoremap <buffer> '        :call VffText("'")<CR>
     nnoremap <buffer> \|       :call VffText("\|")<CR>
-    nnoremap <buffer> <C-U>    :call VffClear()<CR>
     nnoremap <buffer> <BS>     :call VffBackspace()<CR>
+    nnoremap <buffer> <C-L>    :call VffClear()<CR>
     nnoremap <buffer> <M-J>    :call VffDown(1)<CR>
     nnoremap <buffer> <M-K>    :call VffUp(1)<CR>
     nnoremap <buffer> <A-J>    :call VffDown(1)<CR>
@@ -273,6 +273,8 @@ function! VffSetupSelect ()
     nnoremap <buffer> <S-UP>   :call VffUp(1)<CR>
     nnoremap <buffer> <C-J>    :call VffDown(1)<CR>
     nnoremap <buffer> <C-K>    :call VffUp(1)<CR>
+    nnoremap <buffer> <C-D>    :call VffDown(10)<CR>
+    nnoremap <buffer> <C-U>    :call VffUp(10)<CR>
     nnoremap <buffer> <DOWN>   :call VffDown(1)<CR>
     nnoremap <buffer> <UP>     :call VffUp(1)<CR>
     cabbr <buffer> w q
@@ -401,12 +403,13 @@ function! VffSelectCurrentBuffer ()
   let &timeoutlen = g:vff_savetimeoutlen
   let l:myBufNr = bufnr ("%")
   let l:line = getline(".")
+  let l:lineNr = line(".")
   quit
   if g:vff_mode == 'find'
     let g:vff_lines    = ""
     call VFFTextClearSync(g:vff_mode)
   endif
-  if l:line != ""
+  if l:line != "" && l:lineNr >= 7
     let l:path = VFFRelativePathSync(getcwd(), '/' . substitute(l:line, "([0-9]\\+):.*", "", ""))
     silent exec "edit " . fnameescape(l:path)
     if g:vff_mode == 'grep'
@@ -428,4 +431,14 @@ function! VffQuit ()
   exec "bd " . l:myBufNr
   call VffUnsetupSelect()
   let &timeoutlen = g:vff_savetimeoutlen
+endfunction
+
+function! VffDeActivate (mode)
+  call VffQuit()
+  if a:mode != g:vff_mode
+     " Toggle between find/grep modes
+     call VffListBufs (a:mode)
+  " else
+  "    echo ""
+  endif
 endfunction
