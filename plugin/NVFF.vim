@@ -275,12 +275,17 @@ function! VffSetupSelect ()
     cabbr <buffer> w q
     cabbr <buffer> wq q
     call VffSetupDeActivationKey ()
+    call VffHookPaste()
     let g:VffSetup = 1
   endif
 endfunction
 
-" updates the entry line immediately but don't refresh the results until the next CursorHold event
 function! VffText (ch)
+  call VffTextNoRefresh(a:ch)
+  call VFFRefresh(g:vff_mode)
+endfunction
+
+function! VffTextNoRefresh (ch)
   let g:vff_query = VFFTextAppendSync(g:vff_mode, a:ch)
   call VffSaveLineNumber()
   if g:vff_mode == 'grep'
@@ -289,7 +294,6 @@ function! VffText (ch)
     call setline(6, 'Find File: ' . g:vff_query)
   endif
   echo ""
-  call VFFRefresh(g:vff_mode)
 endfunction
 
 function! VffSearch (vimMode)
@@ -341,7 +345,6 @@ function! VffWaiting (ch)
   call setline(4, 'Root: ' . g:vff_path . " [ " . g:vff_status . " ] " . a:ch)
 endfunction
 
-" updates the entry line immediately but don't refresh the results until the next CursorHold event
 function! VffBackspace ()
   let g:vff_query = VFFTextBackspaceSync(g:vff_mode)
   if g:vff_query == v:null
@@ -392,6 +395,7 @@ endfunction
 
 function! VffUnsetupSelect ()
   if exists ("g:VffSetup")
+    call VffUnhookPaste()
     call VffSetupActivationKey ()
     unlet g:VffSetup
   endif
@@ -441,4 +445,28 @@ endfunction
 
 function! VffChangeConfig (configPath)
   call VFFUpdateVffPath(getcwd() . "/" . a:configPath)
+endfunction
+
+function! VffHookPaste()
+lua <<EOF
+  _G['vim.paste'] = vim.paste
+  vim.paste = (function(lines, phase)
+    first = lines[1] -- ignore lines after the first one
+    for i = 1, #first do
+      local c = first:sub(i,i)
+      -- escape backslashes and quotes
+      c = c:gsub("\\", "\\\\"):gsub("\"", "\\\"")
+      -- send each char to Vff
+      vim.cmd('call VffTextNoRefresh("' .. c .. '")')
+    end
+    vim.cmd('call VFFRefresh(g:vff_mode)')
+  end)
+EOF
+endfunction
+
+function! VffUnhookPaste()
+lua <<EOF
+  -- restore nvim handler
+  vim.paste = _G['vim.paste']
+EOF
 endfunction
