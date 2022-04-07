@@ -37,31 +37,26 @@ let vffWindowName = '/---\ Select\ File\ ---'
 let vffRemoveBrowserBuffer = 1
 
 "
-" A non-zero value for the variable highlightOnlyFilename will highlight only
-"   the filename instead of the whole path. The default value is 0.
-let highlightOnlyFilename = 0
-
-"
 " END configuration.
 "
 
 function! VffSetupActivationKey ()
-  exec 'nnoremap ' . g:vffFindActKeySeq . ' :call VffListBufs ("find")<CR>'
-  exec 'vnoremap ' . g:vffFindActKeySeq . ' :call VffListBufs ("find")<CR>'
-  exec 'nnoremap ' . g:vffGrepActKeySeq . ' :call VffListBufs ("grep")<CR>'
-  exec 'vnoremap ' . g:vffGrepActKeySeq . ' :call VffListBufs ("grep")<CR>'
-  exec 'nnoremap ' . g:vffSearchActKeySeq . ' :call VffSearch ("normal")<CR>'
-  exec 'vnoremap ' . g:vffSearchActKeySeq . ' :call VffSearch ("visual")<CR>'
-  exec 'nnoremap ' . g:vffChooseConfigKeySeq . ' :call VffChooseConfig()<CR>'
+  exec 'nnoremap <silent> ' . g:vffFindActKeySeq . ' :call VffListBufs ("find")<CR>'
+  exec 'vnoremap <silent> ' . g:vffFindActKeySeq . ' :call VffListBufs ("find")<CR>'
+  exec 'nnoremap <silent> ' . g:vffGrepActKeySeq . ' :call VffListBufs ("grep")<CR>'
+  exec 'vnoremap <silent> ' . g:vffGrepActKeySeq . ' :call VffListBufs ("grep")<CR>'
+  exec 'nnoremap <silent> ' . g:vffSearchActKeySeq . ' :call VffSearch ("normal")<CR>'
+  exec 'vnoremap <silent> ' . g:vffSearchActKeySeq . ' :call VffSearch ("visual")<CR>'
+  exec 'nnoremap <silent> ' . g:vffChooseConfigKeySeq . ' :call VffChooseConfig()<CR>'
 endfunction
 
 function! VffSetupDeActivationKey ()
-  exec 'nnoremap ' . g:vffFindActKeySeq . ' :call VffDeActivate ("find")<CR>'
-  exec 'vnoremap ' . g:vffFindActKeySeq . ' :call VffDeActivate ("find")<CR>'
-  exec 'nnoremap ' . g:vffGrepActKeySeq . ' :call VffDeActivate ("grep")<CR>'
-  exec 'vnoremap ' . g:vffGrepActKeySeq . ' :call VffDeActivate ("grep")<CR>'
-  exec 'nnoremap ' . g:vffSearchActKeySeq . ' :call VffDeActivate ("grep")<CR>'
-  exec 'vnoremap ' . g:vffSearchActKeySeq . ' :call VffDeActivate ("grep")<CR>'
+  exec 'nnoremap <silent> ' . g:vffFindActKeySeq . ' :call VffDeActivate ("find")<CR>'
+  exec 'vnoremap <silent> ' . g:vffFindActKeySeq . ' :call VffDeActivate ("find")<CR>'
+  exec 'nnoremap <silent> ' . g:vffGrepActKeySeq . ' :call VffDeActivate ("grep")<CR>'
+  exec 'vnoremap <silent> ' . g:vffGrepActKeySeq . ' :call VffDeActivate ("grep")<CR>'
+  exec 'nnoremap <silent> ' . g:vffSearchActKeySeq . ' :call VffDeActivate ("grep")<CR>'
+  exec 'vnoremap <silent> ' . g:vffSearchActKeySeq . ' :call VffDeActivate ("grep")<CR>'
 endfunction
 
 call VffSetupActivationKey ()
@@ -79,7 +74,7 @@ function! VffListBufs (mode)
   let l:saveReport = &report
   let &timeoutlen=0
   let &report=10000
-  silent! exec ":new " . g:vffWindowName
+  silent! exec ":100new " . g:vffWindowName
   setlocal buftype=nofile
   setlocal bufhidden=hide
   setlocal noswapfile
@@ -120,7 +115,7 @@ function! VffListBufs (mode)
     call VffSetupBadSelect ()
     call append(0, "ERROR: No .vff file found!")
     call append(1, "")
-    call append(2, "Hit ESCAPE or ENTER to close this window")
+    call append(2, "Hit ^C or ENTER to close this window")
   endif
   set nomodified
   call VffRestoreLineNumber()
@@ -141,10 +136,9 @@ endfunction
 
 function! VffSetupBadSelect ()
   if ! exists ("g:VffSetup")
-    nnoremap <buffer> <CR>     :call VffQuit()<CR>
-    nnoremap <buffer> <C-C>    :call VffQuit()<CR>
-    " nnoremap <buffer> <ESC>    :call VffQuit()<CR>
-    nnoremap <buffer> q        :call VffQuit()<CR>
+    nnoremap <buffer> <silent> <CR>     :call VffQuit()<CR>
+    nnoremap <buffer> <silent> <C-C>    :call VffQuit()<CR>
+    nnoremap <buffer> <silent> q        :call VffQuit()<CR>
     call VffSetupDeActivationKey ()
     let g:VffSetup = 1
   endif
@@ -153,9 +147,8 @@ endfunction
 function! VffSetupSelect ()
   if ! exists ("g:VffSetup")
     set nofoldenable
-    nnoremap <buffer> <CR>     :call VffSelectCurrentBuffer()<CR>
-    nnoremap <buffer> <C-C>    :call VffQuit()<CR>
-    " nnoremap <buffer> <ESC>    :call VffQuit()<CR>
+    nnoremap <buffer> <silent> <CR>     :call VffSelectCurrentBuffer()<CR>
+    nnoremap <buffer> <silent> <C-C>    :call VffQuit()<CR>
     nnoremap <buffer> <SPACE>  :call VffText(' ')<CR>
     nnoremap <buffer> a        :call VffText('a')<CR>
     nnoremap <buffer> b        :call VffText('b')<CR>
